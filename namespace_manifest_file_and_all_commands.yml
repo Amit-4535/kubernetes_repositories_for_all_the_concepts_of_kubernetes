@@ -1,0 +1,27 @@
+File to create the namespace and the commands
+
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: mynamespace
+
+
+
+
+-	kubectl get ns
+-	kubectl delete ns mynamespace
+-	kubectl get namespaces
+-	kubectl get pods -n mynamespace
+-	kubectl create namespace nginxnamespace
+-	kubectl run nginx --image=nginx  -n nginxnamespace  
+(create the pod inside the particular namespace)
+-	kubectl get pods -n nginxnamespace
+(getting the pod list from that particular  namespace)
+-	kubectl delete pod nginx -n nginxnamespace
+(you can delete the pod from the particular namespace)
+-	kubectl run nginx --image=nginx -n nginxnamespace
+(you can create the pod inside the namespace)
+-	kubectl config set-context --current --namespace=nginxnamespace
+(we can set any namespace as the default namespace)
+
+
