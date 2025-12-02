@@ -1,0 +1,74 @@
+Resource quota – assigning to the pods (extra cpu’s and memory)
+Let us create this demonstration with the deployment file..
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mydeploy
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app_deploy
+
+  template:
+    metadata:
+      name: mypodcontainers
+      labels:
+        app: app_deploy
+
+    spec:
+      containers:
+        - name: c00
+          image: ubuntu
+          command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+          resources:
+            requests:
+              cpu: "1"
+              memory: "128Mi"
+
+            limits:
+              cpu: "2"
+              memory: "256Mi"
+
+-	kubectl get deploy
+-	kubectl get pods
+-	kubectl describe pod podid
+(this will show that the request and limit section – where we can see that what is the pod limit and requested cpu’s and the memories to the pod)
+-	kubectl get pod mydeploy-666cb9ddc8-c9zl2 -o jsonpath='{.spec.containers[0].resources}'
+(filtering the describe result and can take only resource details)
+(this is how we are creating the resource based pods in the organizations..)
+
+Resource allocation through the pod manifest file –
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: mypod
+  labels:
+    env: development
+    class: pod
+spec:
+  containers:
+    - name: c00
+      image: nginx
+      command: ["/bin/sh", "-c", "while true; do echo hello; sleep 5; done"]
+
+      resources:
+        requests:
+          cpu: "1"
+          memory: "128Mi"
+
+        limits:
+          cpu: "2"
+          memory: "256Mi"
+
+-	kubectl get pods
+-	kubectl describe pod podid
+(check the resources block, you will see the requests and limits here)
+-	kubectl get pod mypod -o jsonpath='{.spec.containers[0].resources}'
+(only the information about the resources)
+
+
