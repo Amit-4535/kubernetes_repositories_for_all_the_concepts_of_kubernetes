@@ -1,0 +1,69 @@
+Communicating 2 containers to each others..
+Manifest file to communicate 2 containers to each others..
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: mydemopods
+
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command:
+         [
+          "/bin/bash",
+          "-c",
+          "apt update && apt install -y python3 && python3 -m http.server 8080"
+         ]
+      ports:
+      - containerPort: 8080
+
+    - name: co1
+      image: nginx
+      ports:
+      - containerPort: 80
+
+-	kubectl get pods
+-	kubectl describe pods podid
+(you will get 2 containers are running inside the containers field in the description), we have another below advanced command as well to describe which all pods are running inside the containers.
+-	kubectl get pod mydemopods -o jsonpath='{.spec.containers[*].name}'
+-	kubectl exec -it podname -- /bin/bash
+(to go inside the pods – you will be switching to default containers, in our case c00 is the default container)
+-	kubectl exec podname -it -c containername -- /bin/bash
+(to go inside the particular container)
+-	apt-get update && apt-get install curl
+(install the curl and update your system – to check that 2 containers are talking to each others)
+-	curl localhost:80
+(you will see that you will get the output from the another container)
+
+You can check this as well by going to another container and can follow the similar steps..
+
+
+Notes –
+share the same network namespace
+Every Pod has:
+•	one IP address
+•	one network namespace
+•	one localhost
+•	one set of ports
+Even if the Pod has multiple containers, Kubernetes gives the entire Pod only one IP.
+They share the same localhost (127.0.0.1)
+They share the same network interfaces
+Ports are shared across containers
+If:
+•	c00 binds to port 8080
+•	co1 binds to port 80
+Then the Pod's network looks like:
+localhost:80   → nginx (co1)
+localhost:8080 → python/http server (c00)
+This is why:
+•	c00 → curl localhost:80 (works)
+•	co1 → curl localhost:8080 (works once server is running)
+✔️ Analogy
+A Pod is like a house.
+Inside the house:
+•	Each container is a room.
+•	All rooms share the same address.
+•	If one room (container) opens a door on port 80, everyone else in the house can use it.
+
