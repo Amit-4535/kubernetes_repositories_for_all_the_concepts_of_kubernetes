@@ -1,0 +1,29 @@
+Creating the pod
+Manifest file to create the pod
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: mypod1
+
+spec:
+  containers:
+    - name: container1
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+-	kubectl get pods
+-	kubectl get pods --show-labels
+-	kubectl logs mypod1
+(getting the logs of the pod)
+-	kubectl delete pod podid
+(to delete the pod)
+-	kubectl label pod mypod1 env=development
+(setting the label to the pod)
+-	kubectl exec -it mypod1 -- /bin/bash
+(command to go inside the pod or inside the containers)
+-	kubectl get pods podid -o wide
+(getting the detailed information of the pod.. the additional information like – on which node the pod is running, the ip address of the pod, and other information we will get..)
+-	kubectl describe pod podid
+(getting the detailed information of the pod and the containers)
+

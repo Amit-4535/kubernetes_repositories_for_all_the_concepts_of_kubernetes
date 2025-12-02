@@ -1,0 +1,35 @@
+Manifest file to creating the multiple lables to the pods..
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: delhipod
+  labels:
+    env: testing
+    class: pod
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+-	kubectl get pods
+-	kubectl get pods --show-lables
+-	kubectl get pods -o wide
+-	kubectl label pod mypod1 prod=production
+(additional label assigining to the pods)
+-	kubectl get pods -l env=development
+(get the pod by the name)
+-	kubectl get pods -l env!=development
+(exclude the env=production, and get all other pods – similar to the filter)
+-	kubectl delete pod -l env=development
+(this command basically delete the pods – which is assigned by the development label)
+-	kubectl get pods -l 'env in (production,testing)'
+(get the pods which are in the production and testing environment)
+-	kubectl get pods -l 'env notin (production,testing)'
+(except production and testing – get me the remaining pods)
+-	kubectl exec -it mydeploy-7f8ff8649b-xdhbj -- cat /etc/os-release
+(this command will tell us which os is running inside the pods and the containers)
+
+
+
