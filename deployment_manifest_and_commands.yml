@@ -1,0 +1,64 @@
+Deployment using the manifest
+Deployment.yml
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mydeploy
+  labels:
+    app: nginxdeployment
+
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginxdeployment
+
+  template:
+    metadata:
+      name: deploymentpods
+      labels:
+        app: nginxdeployment
+
+    spec:
+      containers:
+        - name: c00
+          image: ubuntu
+          command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+
+
+-	kubectl apply -f deployment.yml
+-	kubectl get pods
+-	kubectl get pods -o wide
+-	
+-	kubectl get pods
+-	kubectl get deploy -o wide
+-	kubectl describe deploy mydeploy
+(getting the detailed information of the deployment)
+-	kubectl get rs
+(by default when you run the deployment – this should create the replicaset – and the replicaset name should be similar to the deployment name)
+-	kubectl describe rs 
+(this should give you the detailed information of the rplicaset)
+-	kubectl delete pod podid
+(this command will delete the pod, but the replicaset will create the new pod In place of another pod – this is the behaviour of the replicaset (very useful – it is the controller – this will make sure that number of pods are always running which is defined in the deployment manifest file))
+-	kubectl scale --replicas=20 deploy mydeploy
+(through this command we can scale in and scale out the pods or the containers)
+-	kubectl logs -f podid
+(this will give you the detailed log information of the pods)
+-	kubectl exec mydeploy-7f8ff8649b-xdhbj -- cat /etc/os-release
+(this command will tell us which os is running inside the pods and the containers)
+-	kubectl rollout status deploy mydeploy
+(this will tell that mydeploy is successfully rolled out or not??)
+-	kubectl rollout history deploy mydeploy
+(It shows the revision history of your Deployment.)
+Kubernetes keeps track of every time you update a Deployment (new image, new command, new replicas, etc).
+-	kubectl rollout undo deploy mydeploy
+(It reverts your Deployment to the previous revision.)
+(Kubernetes keeps a history of changes (revisions).
+When you run this command, Kubernetes:
+•	Looks at the last applied revision
+•	Rolls back to it
+•	Updates the ReplicaSet to match the previous version
+•	Gradually replaces pods with their older configuration)
+
