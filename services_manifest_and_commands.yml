@@ -1,0 +1,97 @@
+Service in Kubernetes
+What service will provide –
+✔️ Stable IP
+✔️ Stable DNS name
+✔️ Load balancing across Pods
+✔️ Service discovery
+✔️ Internal or external access
+
+A service selects pods using labels.
+
+Service Manifest file of the ClusterIP type..
+
+Create the deployment.yml manifest first
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+          ports:
+            - containerPort: 80
+Now create the service.yml on top of your deployment object
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: webapp
+  ports:
+    - port: 80
+      targetPort: 80
+
+-	kubectl get deploy
+-	kubectl get pods -o wide
+(detailed info of the pods)
+-	kubectl get svc
+(check the service is created)
+-	kubectl get endpoints myservice
+(get the endpoint of the service name)
+-	kubectl describe svc webapp-svc
+(detailed info of the service)
+-	kubectl exec -it podname -- /bin/bash
+(go to any pod of the deployment)
+-	curl http://myservice:80
+(this command will show you the default page of the nginx inside the container)
+Note – the important thing is that the ClusterIP concept of the service is running or accessible in the pod only, not outside of the pod..
+
+Nodeport service type
+Note -- NodePort allows you to access your application from outside the cluster
+Syntax -- http://<Node-Public-IP>:<NodePort>
+We are using the similar deployment file and below is the nodeport service file
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: webapp       # ❗ MATCH YOUR DEPLOYMENT LABEL
+  ports:
+    - port: 80       # Service port (ClusterIP port)
+      targetPort: 80 # Container port inside Pod
+      nodePort: 30080   # Optional (K8s chooses one if you don’t specify)
+
+-	kubectl get svc
+-	myapp-nodeport   NodePort   10.96.x.x   <none>   80:30080/TCP
+(this is the expected output this means)
+•  Service listens internally on port 80
+•  External access on 30080
+
+-	kubectl get nodes -o wide
+(find the node public ip)
+-	http://3.110.45.23:30080
+(it is similar like this – that means the application you will be accessible on the browser.. if you are running nginx then this nginx default page will be displayed)
+
+-	curl http://myapp-nodeport:80
+(run this command inside the pod -- curl http://myapp-nodeport:80)
+you will get the default nginx page, which is running inside the pod..
+-	curl http://<node-internal-ip>:30080
+(check this when you have the EKS cluster)
+(curl http://<node-internal-ip>:30080 means:
+Use any Kubernetes worker node's IP (EC2 instance IP), and use the assigned NodePort (30080).)
+
