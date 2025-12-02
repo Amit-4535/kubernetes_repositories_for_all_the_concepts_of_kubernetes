@@ -1,0 +1,62 @@
+Connecting two pods to each other by using the IP address
+Below are the manifest of pod1 and pod2
+Pod1.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-1
+  labels:
+    app: pod1
+
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu
+    command:
+      [
+        "bash",
+        "-c",
+        "apt update && apt install -y python3 && python3 -m http.server 8080"
+      ]
+    ports:
+      - containerPort: 8080
+
+
+
+
+
+
+
+
+
+Pod2.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-2
+  labels:
+    app: pod2
+
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+
+
+-	Kubectl get pods
+-	Kubectl get pods -o wide
+(for getting the IP address)
+-	Kubectl exec -it pod-1 -- /bin/bash
+-	When you are in the pod1 then update the system and install the curl
+-	Apt-get update && apt install curl
+-	curl ipaddressofpod2:80
+(you will get the default nginx page)
+(that means we are connecting our 2 pods to each other by the ip address concept)
+
+-	similarly you can follow the steps which we have done in the earlier part and use the command – go inside the pod-2 and use the command
+-	curl ipaddressofpod1:8080
+(you can see the content of the pod1 here..)
+
