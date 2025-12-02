@@ -1,0 +1,23 @@
+Label the nodes by using the nodeselector manifest
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nodeselecctor
+
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+  nodeSelector:
+    hardware: c7i-flex-large
+
+you can get the node list 
+-	kubectl get nodes
+-	kubectl label node minikube hardware=c7i-flex-large
+(assigning the label to the node)
+(first we need to assign the label to the node, then through this above file the pod should be created on to that nodes..)
+
+
