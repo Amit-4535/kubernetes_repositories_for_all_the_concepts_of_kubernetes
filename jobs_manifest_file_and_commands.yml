@@ -1,0 +1,44 @@
+Jobs in the Kubernetes
+
+Manifest file of jobs 
+(single job/pod creation)
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: mydemojob
+
+spec:
+  completions: 1
+  parallelism: 1
+
+  template:
+    metadata:
+      name: demo_job_pod
+      labels:
+        app: batch_task
+
+    spec:
+      containers:
+        - name: c00
+          image: busybox:latest
+          command: ["sh", "-c", "echo hello dosto! && sleep 10"]
+
+      restartPolicy: Never
+
+-	kubectl get jobs
+-	kubectl describe job myjob
+-	kubectl logs -l job-name=mydemojob
+(check the pod logs)
+-	kubectl get jobs -o wide
+-	kubectl delete job mydemojob
+-	kubectl get job mydemojob -o yaml
+(check job status)
+
+
+✔ Explanation
+•	completions: 1 → Job runs one time
+•	parallelism: 1 → One pod at a time
+•	busybox:latest → lightweight container
+•	command → prints "hello dosto!" and sleeps
+•	restartPolicy: Never → Required for Jobs
+

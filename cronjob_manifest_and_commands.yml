@@ -1,0 +1,62 @@
+Cron Jobs in kuberenetes
+		A CronJob in Kubernetes is used to run Jobs on a scheduled basis.
+It creates Job resources at the scheduled times, which then create pods to do the actual work.
+
+Manifest file –
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: minute-backup
+
+spec:
+  schedule: "*/2 * * * *"
+
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: minute-backup
+
+        spec:
+          containers:
+            - name: backup-container
+              image: busybox
+              command:
+                - sh
+                - -c
+                - |
+                  echo "backup started !!";
+                  mkdir -p /backups;
+                  mkdir -p /demo-data;
+                  cp -r /demo-data/* /backups/;
+                  echo "backup completed !!";
+
+              volumeMounts:
+                - name: data-volume
+                  mountPath: /demo-data
+                - name: backup-volume
+                  mountPath: /backups
+
+          restartPolicy: OnFailure
+
+          volumes:
+            - name: data-volume
+              hostPath:
+                path: /demo-data
+                type: DirectoryOrCreate
+
+            - name: backup-volume
+              hostPath:
+                path: /backups
+                type: DirectoryOrCreate
+
+-	kubectl get jobs
+-	kubectl describe job cronjob
+-	kubectl get job cronjob -o wide
+-	kubectl get job cronjob -o wide
+-	kubectl get pods --selector=job-name=cronjob
+-	kubectl logs podname
+-	kubectl delete job cronjob
+
+

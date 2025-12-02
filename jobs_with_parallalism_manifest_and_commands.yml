@@ -1,0 +1,34 @@
+manifest job – for multiple completion and parallelism
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parallel-job
+spec:
+  completions: 5
+  parallelism: 2
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: busybox
+        command: ["sh", "-c", "echo Processing; sleep 10"]
+      restartPolicy: Never
+
+
+✔ 1. completions: 5
+This Job must finish five tasks.
+This means Kubernetes must successfully run 5 pods, each completing its work once.
+✔ 2. parallelism: 2
+Kubernetes will run 2 pods at the same time.
+restartPolicy: Never
+Required for Jobs.
+Kubernetes will not restart the pod itself — only Jobs control retries.
+-	kubectl get jobs
+-	kubectl get pods -w
+-	kubectl get pods -l job-name=parallel-job
+-	kubectl logs -l job-name=parallel-job
+-	kubectl logs <pod-name>
+-	kubectl describe job parallel-job
+-	kubectl delete job parallel-job
+
