@@ -1,0 +1,41 @@
+Replication Controller with the manifest..
+
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: myreplica
+
+spec:
+  replicas: 5
+  selector:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+        - name: c00
+          image: ubuntu
+          command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+-	kubectl get pods
+-	kubectl get pods -o wide
+-	kubectl get rc
+(get the detail of the replication controller)
+-	kubectl get rc myreplica
+(detailed about the myreplica replication controller)
+-	kubectl get pods -o wide -w
+(you can get the status of the pods (how they actually behaving, like running/creating/terminating/pending))
+-	kubectl delete pod podid
+(replication controller will replace this deleted pod – simulteniously this will create the pod and delete the pod on similar time, so end user will not be impacted)
+-	kubectl scale --replicas=10 rc myreplica
+(you can scale in and scale out the containers through the replication controller)
+-	kubectl scale --replicas=10 rc -l app=nginx
+(you can scale in and out the contianers by the label as well)
+-	kubectl delete -f replicationcontroller.yml
+(you can see all the pods was created through the replicationcontroller.yml manifest are totally deleted now…)
+
+
