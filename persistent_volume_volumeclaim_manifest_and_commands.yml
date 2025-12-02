@@ -1,0 +1,125 @@
+Persistent volume claim and the persistent volume –
+Persistent volume means we are mapping the pods/containers data with the host machine.. So when pod gets deleted, the data we can recover from the host machines.. (it is kind of storage)
+Persistent Volume -- Actual storage resource in the cluster
+Persistent volume claim -- A user's request for storage
+
+Persistent volume manifest file –
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mypv
+
+spec:
+  capacity:
+    storage: 1Gi
+
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/home/ubuntu"
+
+-	kubectl apply -f persistentvolume.yml
+-	kubectl get pv
+-	kubectl get pv mypv
+(this will provide you how much size of the pv – the access mode and other information)
+-	kubectl describe pv mypv
+(this will give you the detailed information of the persistent volume)
+
+
+Now let us create the persistent volume claim (pvc file)  -- actually claiming that storage..
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mypvc
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+  storageClassName: local-storage
+
+-	kubectl apply -f persistentvolumeclaim.yml
+-	kubectl describe pvc mypvc 
+(this will give you the detailed information of the persistent volume claim – is this mounted or not)
+
+Now let us create the pod manifest and can attach this concept to the pod.
+So the pod file should be –
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testpod
+spec:
+  containers:
+    - name: app
+      image: ubuntu
+      command: ["/bin/bash", "-c", "sleep 3600"]
+      volumeMounts:
+        - name: myvol
+          mountPath: /data
+  volumes:
+    - name: myvol
+      persistentVolumeClaim:
+        claimName: mypvc
+
+-	kubectl get pods
+-	kubectl get pod podid -o wide
+-	kubectl describe pod podid
+(here you will see that mountpath, volumes details, accessmodes and all the informations..)
+(here you will see the volume colume in the description – and you will check that these pv and pvc is working as expectedly..)
+-	kubectl top pod
+(when you are getting this error – you can resolve this issue by adding metrics)
+error: Metrics API not available
+-	minikube addons enable metrics-server
+-	kubectl top pod podid 
+(you can see the memory and cpu usage of the pod now)
+-	kubectl exec -it testpod -- bash
+(go inside the pod)
+-	kubectl delete pod testpod
+(delete the existing pod)
+-	kubectl apply -f pod.yaml
+(recreate the pod)
+-	kubectl exec -it testpod – bash
+(go inside the pod)
+-	cat /data/testfile.txt
+(check the file is exist or not??  -- you will see that file will be exist there)
+(that means the pv, pvc and the pods are working as expected..)
+
+
+You can attach this pv and pvc to your deployment file as well 
+So the deployment file will be like –
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx-deployment-pod
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        VolumeMounts:
+-	mountpath: /var/www/html
+name: my-volume
+     Volumes:
+-	name: my-volume
+persistentVolumeClaim:
+    claimName: local-pvc
+
+
