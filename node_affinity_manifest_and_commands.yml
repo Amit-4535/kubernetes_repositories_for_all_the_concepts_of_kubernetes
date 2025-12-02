@@ -1,0 +1,40 @@
+NodeAffinity using the manifest file –
+The concept – similar to the node selector – just having the greater functionality – through this we can create the pod on required or on the demanding nodes..
+Through node affinity – we can scheduling the pods on required nodes..
+ 
+Manifest file of the node affinity..
+Before writing this file make sure – below used key and value you have assigned to your nodes by the below command..
+
+Kubectl label node nodename server=india
+ (and then you can write below file as per the labels of the nodes..)
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: affinitypod
+  labels:
+    name: affinity
+    class: pod
+
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "server"
+            operator: "In"
+            values:
+              - india
+
+-	kubectl get pods
+-	kubectl get pods -o wide
+(you will see that which pod is running on which node)
+-	kubectl describe pod podname
+(you can get the detailed information of the pod)
+
