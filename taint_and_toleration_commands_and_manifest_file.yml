@@ -1,0 +1,62 @@
+Taints and the tolerance using the command and the manifest
+
+Commands to taint and untaint the nodes.
+-	Kubectl get nodes
+(get all the nodes are available)
+-	Kubectl describe node nodename
+(check in the taint section that node is tainted or not?)
+-	kubectl taint nodes minikube prod=true:NoSchedule
+(taint the particular node)
+-	kubectl describe node minikube | grep Taint
+(check that node is tainted or not – you will see the taints section and can see that node is tainted)
+-	kubectl run mypod --image=ubuntu --command -- /bin/bash -c "while true; do echo hello; sleep 5; done"
+(now try to create the pod – you will see the status of pod as in the pending state – cause we already tainted the node in the above sections – so that is why we can see that pod is in the pending state )
+(you will see the message something like this -- 0/1 nodes are available: 1 node(s) had untolerated taint {prod: true}.)
+
+
+Command to untaint the node
+
+-	kubectl taint node minikube prod=true:NoSchedule-
+(you can untaint the tainted nodes)
+-	kubectl describe node nodename
+(here you can see the taints fild and that is now – you will see as node (that means it is untainted now))
+-	kubectl get nodes 
+(now you can see that pending pod are in the running state – that means the node in untainted now)
+
+
+Tolerations operations – 
+The concept is even if your node is tainted, still we can create or run the pod on that tainted machine by the tolerations operation.
+
+
+
+So the manifest file is –
+kind: Pod
+apiVersion: v1
+metadata:
+  name: mumbaipod
+  labels:
+    app: nginx
+    class: pod
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+  tolerations:
+    - key: "prod"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
+-	kubectl get nodes
+(get the node details)
+-	kubectl describe node minikube
+(you can see that node is tainted or not??)
+(if the node is tainted that means the newly created pod can be going into the pending state, it will not come out or in the running state until you are not untaint the node)
+-	kubectl run madraspod --image=ubuntu --command -- /bin/bash -c "while true; do echo hello; sleep 5; done"
+(command to create the pod as per the command line)
+(and you will see that pod will be going to the pending state)
+-	kubectl apply -f toleration.yml
+(now you can see that still your node is tainted, still you will be able to create the pod on that node due to the toleration operation)
+
