@@ -1,0 +1,44 @@
+Replicaset using the manifest and the commands
+
+kind: ReplicaSet
+apiVersion: apps/v1
+metadata:
+  name: myrs
+
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+        - name: c00
+          image: ubuntu
+          command: ["/bin/bash", "-c", "while true; do echo hello; sleep 5; done"]
+
+-	kubectl get pods
+-	kubectl get pods -o wide
+(for detailed info)
+-	kubectl get pods -o wide -w
+(watch the pod status)
+-	kubectl get rs
+(get the replicaset details)
+-	kubectl get rs myrs
+(getting the detail of the particular replicaset)
+-	kubectl scale --replicas=15 rs myrs
+(scale in and scale out the containers)
+-	kubectl delete pod podid 
+(for deleting the pod)
+Replicaset will ensure that – defined pod number will always exist on the kuberenetes cluster, if any pod might be getting down – on similar time replicaset will create the new pod in the place of that deleted pod..
+Here replicaset is the controller.. – always maintain the actual state equal to desired state
+-	kubectl get pods -o wide -w
+(watching the pod status  -- how they are creating and they are terminating)
+-	kubectl delete -f rs myrs
+(removing everything which is created by the replicaset)
+
